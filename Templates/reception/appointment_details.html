@@ -1,0 +1,25 @@
+{% extends 'reception/recbase.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 style="text-align: center;">Appointment Details </h2>
+   
+    <div class="card">
+        <div class="card-body">
+            
+            <p class="card-text"><strong>Patient ID:</strong> {{ patient_id }}</p>
+            <p class="card-text"><strong>Patient Name:</strong> {{ appointment.patient.patient_name }}</p>
+            <p class="card-text"><strong>Department:</strong> {{ appointment.department.department_name }}</p>
+            <p class="card-text"><strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}</p>
+            <p class="card-text"><strong>Token Number:</strong> {{ appointment.token_number }}</p>
+            <p class="card-text"><strong>Appointment Date:</strong> {{ appointment.appointment_date }}</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}

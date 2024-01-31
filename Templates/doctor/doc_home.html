@@ -1,0 +1,37 @@
+{% extends 'doctor/doctorbase.html' %}
+
+{% block content %}
+<style>
+    .msg{
+            text-align: center;
+            color: red;
+        }
+        .custom-card {
+        background-color: #d2e6fa; 
+        margin-bottom: 60px;
+    }
+    </style>
+<div class="container mt-5">
+<div class="msg">
+    {% for meg in messages %}
+    <h5><div class="box">{{meg}}</div></h5>
+    {% endfor %}
+    </div>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card text-center custom-card" style="width: 500px;">
+        <div class="card-body">
+            <h5 class="card-title mt-3" style="font-size: 1.5rem;">Welcome, {{ doctor.get_full_name }}</h5>
+            <img src="{{ doctor_details.image.url }}" alt="Doctor Image" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
+            
+            <p class="card-text" style="font-size: 1.1rem;"><b>Name</b>: {{ doctor.get_full_name }}</p>
+            <p class="card-text" style="font-size: 1.1rem;"><b>Username</b>: {{ doctor.username }}</p>
+            <p class="card-text" style="font-size: 1.1rem;"><b>Email</b>: {{ doctor.email }}</p>
+            <p class="card-text" style="font-size: 1.1rem;"><b>Number</b>: {{ doctor_details.number }}</p>
+            <p class="card-text" style="font-size: 1.1rem;"><b>Department</b>: {{ doctor_details.department.department_name }}</p>
+            
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

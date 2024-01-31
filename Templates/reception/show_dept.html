@@ -1,0 +1,34 @@
+{% extends 'reception/recbase.html' %}
+
+{% block content %}
+<style>
+     .container-wrapper {
+        margin-top: 70px; 
+    }
+</style>
+<div class="container-wrapper">
+<div class="container mt-4 bg-white p-4">
+    <h2 style="text-align: center;" class="text-dark">Department List</h2>
+    <table class="table table-bordered">
+        <thead style="background-color: rgb(123, 223, 245);">
+            <tr>
+                <th>Department Name</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dept in department %}
+                <tr>
+                    <td>{{ dept.department_name }}</td>
+                    <td>{{ dept.description }}</td>
+                    <td>
+                        <a href="{% url 'delete_dept' dept.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this department?')">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}

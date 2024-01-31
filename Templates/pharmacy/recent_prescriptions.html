@@ -1,0 +1,48 @@
+
+{% extends 'pharmacy/phabase.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Recent Prescriptions</h2><br>
+
+    <div class="table-responsive">
+        <table class="table ">
+            <thead style="background-color: rgb(123, 223, 245);">
+                <tr>
+                    <th>Prescription Date</th>
+                    <th>Patient Id</th>
+                    <th>Patient Name</th>
+                    <th>Doctor Name</th>
+                    <th>Department Name</th>
+                    <th>Medicine Name</th>
+                    <th>Illness</th>
+                    <th>Consumption Time</th>
+                </tr>
+            </thead>
+            <tbody class="table-hover" style="background-color: white">
+                {% for prescription in recent_prescriptions %}
+                    <tr>
+                        <td>{{ prescription.timestamp }}</td>
+                        <td>{{ prescription.appointment.patient.patient_id }}</td>
+                        <td>{{ prescription.appointment.patient.patient_name }}</td>
+                        
+                        <td>{{ prescription.appointment.doctor.get_full_name }}</td>
+                        <td>{{ prescription.appointment.department.department_name }}</td>
+                        <td>{{ prescription.medicine_name }}</td>
+                        <td>{{ prescription.illness }}</td>
+                        <td>{{ prescription.consumption_time }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    
+    .table-hover tr:hover {
+        background-color: rgb(222, 238, 246); 
+    }
+</style>
+
+{% endblock %}

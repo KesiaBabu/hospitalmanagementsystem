@@ -1,0 +1,29 @@
+
+{% extends 'doctor/doctorbase.html' %}
+
+{% block content %}
+<style>
+    .msg {
+        text-align: center;
+        color: red;
+    }
+    </style>
+<div class="container mt-5">
+    <h2 class="mb-4">Search Patient</h2>
+    <div class="msg">
+        {% for p in messages %}
+        <h5><div class="box">{{ p }}</div></h5>
+        {% endfor %}
+    </div>
+    <form method="post" action="{% url 'search_patient' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="patient_id">Patient ID</label>
+            <input type="text" class="form-control" id="patient_id" name="patient_id" style="width: 60%;" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+</div>
+{% endblock %}

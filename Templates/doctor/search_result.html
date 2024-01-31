@@ -1,0 +1,59 @@
+
+{% extends 'doctor/doctorbase.html' %}
+
+{% block content %}
+<style>
+   
+    .table-row-hover:hover {
+        background-color: #f0f0f0 !important; 
+    }
+</style>
+<div class="container mt-5 pb-5">
+    <h2 class="mb-4">Patient Details</h2>
+
+    {% if patient %}
+        <div class="card" style="background-color: #d2e6fa;">
+            <div class="card-body">
+                <p class="card-text"><strong>Patient ID:</strong> {{ patient.patient_id }}</p>
+                <p class="card-text"><strong>Name:</strong> {{ patient.patient_name }}</p>
+                <p class="card-text"><strong>Address:</strong> {{ patient.patient_address }}</p>
+                <p class="card-text"><strong>Mobile Number:</strong> {{ patient.mobile_number }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ patient.email }}</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <h4>Consultation History</h4>
+            <div class="table-responsive">
+                <table class="table  table-hover">
+                    <thead style="background-color: rgb(123, 223, 245);">
+                        <tr>
+                            <th>Date and Time</th>
+                            <th>Doctor Name</th>
+                            <th>Illness</th>
+                            <th>Medicine Name</th>
+                            <th>Consumption Time</th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color:white">
+                        {% for consultation in consultations %}
+                        <tr class="table-row-hover">
+                                <td>{{ consultation.timestamp|date:"F d, Y H:i" }}</td>
+                                <td>{{ consultation.appointment.doctor.get_full_name }}</td>
+                                <td>{{ consultation.illness }}</td>
+                                <td>{{ consultation.medicine_name }}</td>
+                                <td>{{ consultation.consumption_time }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <p>No patient found with the specified ID.</p>
+    {% endif %}
+</div>
+
+
+
+{% endblock %}

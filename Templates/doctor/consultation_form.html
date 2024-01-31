@@ -1,0 +1,55 @@
+
+{% extends 'doctor/doctorbase.html' %}
+
+{% block content %}
+{% load static %}
+<style>
+    body {
+        background-image: url('{% static "images/d.jpg" %}');
+        background-size: cover; 
+        background-repeat: no-repeat;
+        background-attachment: fixed; 
+    }
+   
+    
+    
+ 
+</style>
+<div class="container mt-5 pb-5">
+    <h2 class="mb-4">Consultation Form</h2>
+
+    <form method="post" action="{% url 'submit_consultation' appointment.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="patient_name">Patient Name</label>
+            <input type="text" class="form-control" id="patient_name" name="patient_name" style="width: 60%;" value="{{ appointment.patient.patient_name }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor_name">Doctor Name</label>
+            <input type="text" class="form-control" id="doctor_name" name="doctor_name" style="width: 60%;" value="{{ appointment.doctor.get_full_name }}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="illness">Illness</label>
+            <textarea class="form-control" id="illness" name="illness" rows="3" style="width: 60%;" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="medicine_name">Medicine Name</label>
+            <input type="text" class="form-control" id="medicine_name" name="medicine_name" style="width: 60%;" required>
+        </div>
+
+        <div class="form-group">
+            <label for="consumption_time">Consumption Time</label>
+            <select class="form-control" id="consumption_time" name="consumption_time" style="width: 60%;" required>
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+                <option value="evening">Evening</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Consultation</button>
+    </form>
+</div>
+{% endblock %}

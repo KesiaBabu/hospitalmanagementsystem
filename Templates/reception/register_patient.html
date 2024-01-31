@@ -1,0 +1,77 @@
+{% extends 'reception/recbase.html' %}
+
+{% block content %}
+<style>
+    .space-after-container {
+        height: 90px; 
+    }
+
+    .container-bg {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 60px;
+        width: 100%; 
+        max-width: 700px; 
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .container-bg label {
+        color: black;
+    }
+
+    .msg {
+        text-align: center;
+        color: red;
+    }
+
+    @media screen and (max-width: 767px) {
+        
+        .container-bg {
+            padding: 10px;
+        }
+    }
+
+</style>
+<title>Register Patient</title>
+</head>
+<body>
+
+<div class="container container-bg">
+    <h2 style="color: black;" class="text-center mb-4">Patient Registration</h2>
+    <div class="msg">
+        {% for p in messages %}
+        <h5><div class="box">{{ p }}</div></h5>
+        {% endfor %}
+    </div>
+
+    <form action="{% url 'register_patient' %}" method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" name="pname" required>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea class="form-control" name="paddress" rows="2" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="tel" class="form-control" name="pnumber" pattern="[0-9]{10}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+</div>
+<div class="space-after-container"></div>
+{% endblock %}

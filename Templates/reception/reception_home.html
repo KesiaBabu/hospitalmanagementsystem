@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            /* background-image: url('static/images/r.jpg');
+            background-size: cover;
+            background-position: center; */
+            background-color: #bad2ec;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .navbar {
+            background: linear-gradient(to right, #343a40, #007bff); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 20px;
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #ffcc00;
+            text-decoration: none;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-image {
+            display: inline-block;
+            margin: 10px;
+            text-decoration: none;
+        }
+
+        .link-image img {
+            width: 280px;
+            height: 280px;
+            border-radius: 10px; 
+            transition: transform 0.3s; 
+        }
+
+        .link-image img:hover {
+            transform: scale(0.9); 
+        }
+
+        .link-text {
+            color: black;
+            font-weight: bold;
+            font-size: larger;
+            text-decoration: none;
+        }
+
+        .link-text:hover {
+            text-decoration: none;
+        }
+
+        .reception-heading {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: black; 
+        }
+    </style>
+    <title>Reception</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">Reception</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'reception_home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="reception-heading">
+        <h1>Reception</h1>
+    </div>
+
+    <a href="{% url 'register_patient' %}" class="link-image">
+        <img src="static/images/reg.jpg" alt="Register Patient" class="img-fluid">
+        <p class="link-text">Register Patient</p>
+    </a>
+
+    <a href="{% url 'book_appointment' %}" class="link-image">
+        <img src="static/images/book.webp" alt="Book Appointment" class="img-fluid">
+        <p class="link-text">Book Appointment</p>
+    </a>
+
+    <a href="{% url 'r_search_patient' %}" class="link-image">
+        <img src="static/images/search.png" alt="Search Patient" class="img-fluid">
+        <p class="link-text">Search Patient</p>
+    </a>
+
+    <a href="{% url 'show_dept' %}" class="link-image">
+        <img src="static/images/dep.jpg" alt="Departments" class="img-fluid">
+        <p class="link-text">Departments</p>
+    </a>
+
+    <a href="{% url 'dept' %}" class="link-image">
+        <img src="static/images/add.jpg" alt="Add Department" class="img-fluid">
+        <p class="link-text">Add Department</p>
+    </a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

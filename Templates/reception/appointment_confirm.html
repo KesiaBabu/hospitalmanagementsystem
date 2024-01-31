@@ -1,0 +1,54 @@
+{% extends 'reception/recbase.html' %}
+
+{% block content %}
+<style>
+     .content-wrapper {
+        margin: 60px; 
+    }
+    
+    .container-bg {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+        color: black;
+        
+    }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<body>
+    <div class="content-wrapper">
+    
+        <h2 class="mb-4" style="text-align: center;">Thank You for Scheduling an Appointment</h2>
+        
+        <div class="card">
+            <p>Dear {{ appointment.patient.patient_name }},</p>
+            <p>Appointment has been scheduled successfully with the following details:</p>
+
+            <ul>
+                <li><strong>Patient ID:</strong> {{appointment.patient.patient_id }}</li>
+                <li><strong>Department:</strong> {{ appointment.department.department_name }}</li>
+                <li><strong>Doctor:</strong> {{ appointment.doctor.first_name }}</li>
+                <li><strong>Token Number:</strong> {{ appointment.token_number }}</li>
+                <li><strong>Appointment Date and Time:</strong> {{ appointment.appointment_date|date:"F d, Y H:i" }}</li>
+            </ul>
+
+            <!-- <p>We look forward to seeing you on {{ appointment.appointment_date|date:"F d, Y H:i" }}.</p> -->
+            <p>If you have any questions or need to make changes, please contact us.</p>
+            
+            <p>Thank you!</p>
+        </div>
+   </div>
+
+</body>
+</html>
+{% endblock %}

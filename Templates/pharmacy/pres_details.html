@@ -1,0 +1,42 @@
+{% extends 'pharmacy/phabase.html' %}
+
+{% block content %}
+
+<div class="container mt-5 pb-5">
+    <h2>Prescription Details</h2><br>
+    <div class="table-responsive">
+        <table class="table ">
+            <thead style="background-color: rgb(123, 223, 245);">
+                <tr>
+                    <th>Appointment Date</th>
+                    <th>Patient Name</th>
+                    <th>Doctor Name</th>
+                    <th>Department</th>
+                    <th>Medicine Name</th>
+                    <th>Consumption Time</th>
+                </tr>
+            </thead>
+            <tbody class="table-hover" style="background-color:white">
+                {% for consultation in consultations %}
+                    <tr>
+                        <td>{{ consultation.appointment.appointment_date }}</td>
+                        <td>{{ consultation.appointment.patient.patient_name }}</td>
+                        <td>{{ consultation.appointment.doctor.get_full_name }}</td>
+                        <td>{{ consultation.appointment.department.department_name }}</td>
+                        <td>{{ consultation.medicine_name }}</td>
+                        <td>{{ consultation.consumption_time }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    
+    .table-hover tr:hover {
+        background-color :rgb(222, 238, 246); 
+    }
+</style>
+
+{% endblock %}

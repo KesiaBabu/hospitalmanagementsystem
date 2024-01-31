@@ -1,0 +1,46 @@
+
+{% extends 'doctor/doctorbase.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Reassigned Patient Details</h2><br>
+
+    <div class="table-responsive">
+        <table class="table  table-hover">
+            <thead style="background-color: lightblue;">
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Reassignment Date</th>
+                    <th>Medicine Name</th>
+                    <th>Illness</th>
+                    <th>Consumption Time</th>
+                    <th>Assigned To</th>
+                    <th>Assigned By</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody style="background-color: white;">
+                {% for reassigned_patient in reassigned_patients %}
+                    <tr class="table-row-hover">
+                        <td>{{ reassigned_patient.patient.patient_name }}</td>
+                        <td>{{ reassigned_patient.reassignment_date }}</td>
+                        <td>{{ reassigned_patient.medicine_name }}</td>
+                        <td>{{ reassigned_patient.illness }}</td>
+                        <td>{{ reassigned_patient.consumption_time }}</td>
+                        <td>{{ reassigned_patient.new_doctor.get_full_name }}</td>
+                        <td>{{ reassigned_patient.current_doctor.get_full_name }}</td>
+                        <td>{{ reassigned_patient.reason }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    
+    .table-row-hover:hover {
+        background-color: rgb(251, 250, 250); 
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('static/images/doctor.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 90px 0 0; 
+            margin-bottom: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; 
+            color: white;
+        }
+        .custom-container {
+            display: flex;
+            justify-content: flex-end; 
+        }
+        .signup-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            margin-right: 20px; 
+        }
+        .signup-container h3 {
+            margin-top: 7px;
+            margin-bottom: 7px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+        }
+        .form-group label {
+            text-align: left;
+            margin-bottom: 1px;
+            display: block;
+            color: #d2d2d2;
+        }
+        .btn-signup {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 5px;
+        }
+        .msg{
+            text-align: center;
+            color: red;
+        }
+      
+    
+    .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-radius: 5px;
+        margin: 0; 
+    }
+
+    </style>
+    <title>Doctor Signup</title>
+</head>
+<body>
+
+<div class="container custom-container">
+    <div class="signup-container">
+        <h3>Doctor Signup</h3>
+        <div class="msg">
+            {% for meg in messages %}
+            <h5><div class="box">{{meg}}</div></h5>
+            {% endfor %}
+            </div>
+        <form action="{% url 'doc_reg' %}" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">First Name</label>
+                <input type="text" class="form-control" name='firstname' required>
+            </div>
+            <div class="form-group">
+                <label for="name">Last Name</label>
+                <input type="text" class="form-control" name='lastname' required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="number">Contact Number </label>
+                    <input type="tel" class="form-control" name="number" pattern="[0-9]{10}" required>
+            </div>
+
+            <div class="form-group">
+                <input type="hidden"  name="text" value= "2">
+            </div>
+
+            <div class="form-group">
+            <label for="department">Department</label>
+            <select name="sel">
+                {% for dept in department %}
+                <option value="{{dept.id}}">{{dept.department_name}}</option>
+                {% endfor %}
+                </select>
+            </div>
+               
+            
+            <div class="form-group">
+                <label for="profilePicture">Profile Picture</label>
+                <input type="file" class="form-control" name="image" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn btn-signup">Signup</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

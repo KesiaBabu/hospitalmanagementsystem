@@ -1,0 +1,61 @@
+{% extends 'pharmacy/phabase.html' %}
+
+{% block content %}
+<style>
+    .msg {
+        text-align: center;
+        color: red;
+    }
+
+    .image-container {
+        position: relative;
+        overflow: hidden;
+        
+    }
+
+    .image-container img {
+        transition: transform 0.3s;
+    }
+
+    .image-container:hover img {
+        transform: scale(0.9); 
+    }
+</style>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Pharmacy</h1>
+    <div class="msg">
+        {% for meg in messages %}
+            <h5><div class="box">{{meg}}</div></h5>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4 text-center">
+            <div class="image-container">
+                <a href="{% url 'recent_prescriptions' %}">
+                    <img src="static/images/pres.jpg" alt="Prescription Details" class="img-fluid" style="width: 250px; height: 250px;">
+                </a>
+            </div>
+            <h4 class="mt-2">Recent Prescription</h4>
+        </div>
+
+        <div class="col-md-4 text-center">
+            <div class="image-container">
+                <a href="{% url 'pres_details' %}">
+                    <img src="static/images/pre.jpg" alt="Prescription Details" class="img-fluid" style="width: 250px; height: 250px;">
+                </a>
+            </div>
+            <h4 class="mt-2">All Prescriptions </h4>
+        </div>
+
+        <div class="col-md-4 text-center">
+            <div class="image-container">
+                <a href="{% url 'p_search_patient' %}">
+                    <img src="static/images/search.png" alt="Search Patient" class="img-fluid" style="width: 250px; height: 250px;">
+                </a>
+            </div>
+            <h4 class="mt-2">Search Patient</h4>
+        </div>
+    </div>
+</div>
+{% endblock %}

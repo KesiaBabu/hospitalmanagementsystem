@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('static/images/login.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .login-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .msg {
+            text-align: center;
+            color: red;
+        }
+    </style>
+    <title>Login</title>
+</head>
+<body>
+
+<div class="container">
+    <div class="login-container">
+        <h2>LOGIN</h2>
+        <div class="msg">
+            {% for mg in messages %}
+            <h5><div class="box">{{ mg }}</div></h5>
+            {% endfor %}
+        </div>
+        <form action="{% url 'loginfun' %}" method="post">
+            {% csrf_token %}
+           
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Username" name="username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-login">Login</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

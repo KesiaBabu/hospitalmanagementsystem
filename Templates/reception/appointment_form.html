@@ -1,0 +1,85 @@
+{% extends 'reception/recbase.html' %}
+
+{% block content %}
+<style>
+    .container-bg {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+    }
+</style>
+
+<div class="container container-bg">
+    <h2 style="color:black;" class="text-center mb-4">Book an Appointment</h2>
+
+    <form method="post" action="{% url 'appointment_form' patient_id=patient.id %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="department">Department</label>
+            <select class="form-control" id="department" name="department" required>
+                <!-- <option value="" disabled {% if not selected_department %}selected{% endif %}>Select Department</option> -->
+                {% for department in departments %}
+                    <option value="{{ department.id }}" {% if department.id == selected_department %}selected{% endif %}>
+                        {{ department.department_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="doctor">Doctor</label>
+            <select class="form-control" name="doctor" id="doctor" required>
+                <option value="" disabled selected>Select Doctor</option>
+                
+                {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">{{ doctor.first_name }} {{ doctor.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="appointment_date">Appointment Date and Time</label>
+            <input type="datetime-local" class="form-control" name="appointment_date" id="appointment_date" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Appointment</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+<script>
+
+     $(document).ready(function() {
+    
+    var selectedDepartment = "{{ selected_department }}";
+    if (selectedDepartment) {
+        $("#department").val(selectedDepartment);
+    }
+
+   
+    $("#department").change(function() {
+       
+        window.location.href = "{% url 'appointment_form' patient_id=patient.id %}?department=" + $(this).val();
+    });
+
+  
+    $("form").submit(function() {
+        
+        if ($("#appointment_date").val() === "") {
+          
+            alert("Please fill in the appointment date and time before submitting.");
+            return false; 
+        }
+       
+        return true;
+    });
+});
+</script>
+{% endblock %}
