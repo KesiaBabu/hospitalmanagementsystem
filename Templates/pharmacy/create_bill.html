@@ -1,0 +1,157 @@
+{% extends 'pharmacy/phabase.html' %}
+{% block content %}
+
+<style>
+    
+
+    .billing-container {
+        max-width: 900px;
+        margin: 60px auto 100px auto;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+
+    label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 7px;
+        font-size: 1rem;
+    }
+
+    .medicine-entry {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #dee2e6;
+    }
+
+    #add-medicine {
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+    .remove-medicine {
+        margin-top: 5px;
+    }
+
+    .btn-primary {
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-danger {
+        border-radius: 6px;
+    }
+
+    .section-title {
+        color: #007bff;
+        font-weight: 600;
+        margin-top: 30px;
+    }
+
+    .form-row > .col {
+        padding-right: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            flex-direction: column;
+        }
+    }
+</style>
+ <h2><i class="fas fa-file-invoice-dollar"></i> Create Bill</h2>
+<div class="container billing-container">
+   
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Patient Selection -->
+        <div class="form-group">
+            <label><i class="fas fa-user-injured"></i> Select Patient</label>
+            <select name="patient" class="form-control" required>
+                <option value="" disabled selected>-- Select Patient --</option>
+                {% for p in patients %}
+                    <option value="{{ p.id }}">{{ p.patient_name }} ({{ p.patient_id }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <h5 class="section-title"><i class="fas fa-pills"></i> Medicines</h5>
+        <div id="medicine-list">
+            <div class="form-row medicine-entry">
+                <div class="col">
+                    <select name="medicine[]" class="form-control" required>
+                        <option value="" disabled selected>-- Select Medicine --</option>
+                        {% for med in medicines %}
+                            <option value="{{ med.id }}">{{ med.name }} - ₹{{ med.price }} ({{ med.quantity }} left)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="number" name="quantity[]" placeholder="Quantity" class="form-control" min="1" required>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-danger remove-medicine"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-success mb-4" id="add-medicine">
+            <i class="fas fa-plus"></i> Add Another Medicine
+        </button>
+
+      
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-receipt"></i> Generate Bill
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+
+<script>
+    document.getElementById('add-medicine').addEventListener('click', function () {
+        const list = document.getElementById('medicine-list');
+        const entry = list.querySelector('.medicine-entry');
+        const newEntry = entry.cloneNode(true);
+        newEntry.querySelectorAll('input').forEach(input => input.value = '');
+        newEntry.querySelector('select').selectedIndex = 0;
+        list.appendChild(newEntry);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.remove-medicine')) {
+            const entry = e.target.closest('.medicine-entry');
+            const list = document.getElementById('medicine-list');
+            if (list.children.length > 1) {
+                entry.remove();
+            }
+        }
+    });
+</script>
+{% endblock %}

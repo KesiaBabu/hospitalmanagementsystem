@@ -28,7 +28,7 @@ urlpatterns = [
     path('pha_reg',views.pha_reg,name='pha_reg'),
     path('pharmacy_home',views.pharmacy_home,name='pharmacy_home'),
     path('p_change_password',views.p_change_password,name='p_change_password'),
-    path('p_search_patient',views.p_search_patient,name='p_search_patient'),
+    # path('p_search_patient',views.p_search_patient,name='p_search_patient'),
     path('pres_details',views.pres_details,name='pres_details'),
     path('appointment_details/<int:patient_id>',views.appointment_details,name='appointment_details'),
     path('book_appointment',views.book_appointment,name='book_appointment'),
@@ -36,6 +36,22 @@ urlpatterns = [
     path('reassign_patient_success',views.reassign_patient_success,name='reassign_patient_success'),
     path('reassigned_details',views.reassigned_details,name='reassigned_details'),
     path('recent_prescriptions',views.recent_prescriptions,name='recent_prescriptions'),
-    
-    
+
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('download-consultation/<int:consultation_id>/', views.download_consultation_summary, name='download_consultation'),
+    path('doctor-schedule_view/', views.doctor_schedule_view, name='doctor_schedule_view'),
+    path('doctor_schedule/', views.doctor_schedule, name='doctor_schedule'),
+    path('ajax/get_doctors/', views.get_doctors_by_department, name='get_doctors_by_department'),
+    path('cancel_appointment/<int:appointment_id>', views.cancel_appointment, name='cancel_appointment'),
+    path('r_search_result/<str:patient_id>',views.r_search_result,name='r_search_result'),
+    path('stock_list', views.stock_list, name='stock_list'),
+    path('add_medicine', views.add_medicine, name='add_medicine'),
+    path('create_bill/', views.create_bill, name='create_bill'),
+    path('bill/<int:bill_id>/', views.bill_detail, name='bill_detail'),
+    path('download_bill/<int:bill_id>/', views.download_bill_pdf, name='download_bill'),
+    path('edit_medicine/<int:id>/', views.edit_medicine, name='edit_medicine'),
+    path('delete_medicine/<int:id>/', views.delete_medicine, name='delete_medicine'),
+    path('search_patient/', views.search_patient_billing, name='search_patient_billing'),
+    path('consult_reassigned_patient/<int:reassignment_id>/', views.consult_reassigned_patient, name='consult_reassigned_patient'),
+    path('doctor_notifications/', views.doctor_notifications, name='doctor_notifications')
 ]

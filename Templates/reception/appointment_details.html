@@ -2,24 +2,52 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 style="text-align: center;">Appointment Details </h2>
-   
-    <div class="card">
-        <div class="card-body">
-            
-            <p class="card-text"><strong>Patient ID:</strong> {{ patient_id }}</p>
-            <p class="card-text"><strong>Patient Name:</strong> {{ appointment.patient.patient_name }}</p>
-            <p class="card-text"><strong>Department:</strong> {{ appointment.department.department_name }}</p>
-            <p class="card-text"><strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}</p>
-            <p class="card-text"><strong>Token Number:</strong> {{ appointment.token_number }}</p>
-            <p class="card-text"><strong>Appointment Date:</strong> {{ appointment.appointment_date }}</p>
+    <h2 class="text-center mb-4 text-black">
+        <i class="fas fa-calendar-check"></i> Appointment Details
+    </h2>
+
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Patient Appointment Summary</h5>
         </div>
+        <div class="card-body bg-light">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Patient ID:</strong> {{ patient_id }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Patient Name:</strong> {{ appointment.patient.patient_name }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Department:</strong> {{ appointment.department.department_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Token Number:</strong> <span class="badge badge-info p-2">{{ appointment.token_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Appointment Date:</strong> {{ appointment.appointment_date|date:"d M Y, h:i A" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'reception_home' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
     </div>
 </div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
 {% endblock %}

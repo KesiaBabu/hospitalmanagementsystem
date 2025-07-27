@@ -49,10 +49,55 @@
             text-align: center;
             color: red;
         }
+        .navbar {
+            background: linear-gradient(to right, #343a40, #007bff); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s; 
+            font-size: 20px;
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #ffcc00; 
+            text-decoration: none;
+        }
     </style>
     <title>Login</title>
 </head>
 <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand" href="#home">Mediport</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#home">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home' %}#services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
 <div class="container">
     <div class="login-container">
@@ -72,6 +117,11 @@
                 <input type="password" class="form-control" placeholder="Password" name="password" required>
             </div>
             <button type="submit" class="btn btn-login">Login</button>
+
+            <p class="mt-3">
+            <a href="{% url 'forgot_password' %}" style="color:#ccc;">Forgot Password?</a>
+            </p>
+
         </form>
     </div>
 </div>

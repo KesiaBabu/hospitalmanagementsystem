@@ -47,3 +47,34 @@ class PatientReassignment(models.Model):
     consumption_time = models.CharField(max_length=20, null=True)
     reassignment_date = models.DateTimeField(auto_now_add=True)
     reason = models.TextField(null=True)
+
+class Medicine(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    quantity = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    expiry_date = models.DateField()
+    added_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def is_low_stock(self):
+        return self.quantity < 10
+    
+class Bill(models.Model):
+    patient = models.ForeignKey(patient, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Bill #{self.id} - {self.patient.patient_name}"
+
+class BillItem(models.Model):
+    bill = models.ForeignKey(Bill, related_name='items', on_delete=models.CASCADE)
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)  # unit price
+
+    def __str__(self):
+        return f"{self.medicine.name} x {self.quantity}"

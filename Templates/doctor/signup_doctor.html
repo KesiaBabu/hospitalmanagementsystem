@@ -10,7 +10,7 @@
             background-size: cover;
             background-position: center;
             height: 100vh;
-            margin: 90px 0 0; 
+            margin: 130px 0 0; 
             margin-bottom: 90px;
             display: flex;
             align-items: center;
@@ -23,9 +23,9 @@
         }
         .signup-container {
             background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
+            padding: 20px;
             border-radius: 10px;
-            width: 400px;
+            width: 450px;
             text-align: center;
             margin-right: 20px; 
         }
@@ -74,11 +74,57 @@
         border-radius: 5px;
         margin: 0; 
     }
+    .navbar {
+            background: linear-gradient(to right, #343a40, #007bff); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s; 
+            font-size: 20px;
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #ffcc00; 
+            text-decoration: none;
+        }
 
     </style>
     <title>Doctor Signup</title>
 </head>
 <body>
+
+     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand" href="#home">Mediport</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#home">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home' %}#services">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
 
 <div class="container custom-container">
     <div class="signup-container">
@@ -119,6 +165,7 @@
             <div class="form-group">
             <label for="department">Department</label>
             <select name="sel">
+                <option value="" selected disabled>Select a department</option>
                 {% for dept in department %}
                 <option value="{{dept.id}}">{{dept.department_name}}</option>
                 {% endfor %}

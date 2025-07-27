@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'hospital.context_processors.doctor_notification_counts',
             ],
         },
     },
@@ -140,4 +141,4 @@ EMAIL_HOST='smtp.gmail.com'
 EMAIL_USE_TLS=True
 EMAIL_PORT=587
 EMAIL_HOST_USER='kesiasbabu@gmail.com'
-EMAIL_HOST_PASSWORD='khgd yzpm qnjx yqgq'
+EMAIL_HOST_PASSWORD='xaqy zgzb arcm faaa'

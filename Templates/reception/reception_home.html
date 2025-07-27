@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         body {
-            /* background-image: url('static/images/r.jpg');
-            background-size: cover;
-            background-position: center; */
-            background-color: #bad2ec;
-            height: 100vh;
+            background-color: #d2ecf6;
             margin: 0;
-            color: white;
+            color: black;
         }
 
         .navbar {
-            background: linear-gradient(to right, #343a40, #007bff); 
+            background: linear-gradient(to right, #343a40, #007bff);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -28,72 +28,74 @@
 
         .navbar-nav .nav-item .nav-link {
             color: white;
-            text-decoration: none;
-            transition: color 0.3s;
             font-size: 20px;
         }
 
         .navbar-nav .nav-item .nav-link:hover {
             color: #ffcc00;
-            text-decoration: none;
-        }
-
-        .container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .link-image {
-            display: inline-block;
-            margin: 10px;
-            text-decoration: none;
-        }
-
-        .link-image img {
-            width: 280px;
-            height: 280px;
-            border-radius: 10px; 
-            transition: transform 0.3s; 
-        }
-
-        .link-image img:hover {
-            transform: scale(0.9); 
-        }
-
-        .link-text {
-            color: black;
-            font-weight: bold;
-            font-size: larger;
-            text-decoration: none;
-        }
-
-        .link-text:hover {
-            text-decoration: none;
         }
 
         .reception-heading {
-            margin-top: 30px;
-            margin-bottom: 30px;
-            font-size: 24px;
-            color: black; 
+            margin: 30px 0 30px;
+            font-size: 32px;
+            font-weight: bold;
+            color: black;
+            text-align: center;
         }
+
+        .card-box {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            height: 200px;
+            transition: transform 0.3s;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-box i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        .card-box p {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #333;
+           
+        }
+
+        a, a:hover, a:focus {
+    text-decoration: none;
+    color: inherit;
+}
     </style>
+
     <title>Reception</title>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#">Reception</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="{% url 'reception_home' %}">Mediport</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{% url 'reception_home' %}">Home</a>
+                <a class="nav-link" href="{% url 'reception_home' %}"><i class="fas fa-home mr-2"></i>Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
             </li>
         </ul>
     </div>
@@ -101,34 +103,61 @@
 
 <div class="container pb-5">
     <div class="reception-heading">
-        <h1>Reception</h1>
+        RECEPTION DASHBOARD
     </div>
 
-    <a href="{% url 'register_patient' %}" class="link-image">
-        <img src="static/images/reg.jpg" alt="Register Patient" class="img-fluid">
-        <p class="link-text">Register Patient</p>
-    </a>
-
-    <a href="{% url 'book_appointment' %}" class="link-image">
-        <img src="static/images/book.webp" alt="Book Appointment" class="img-fluid">
-        <p class="link-text">Book Appointment</p>
-    </a>
-
-    <a href="{% url 'r_search_patient' %}" class="link-image">
-        <img src="static/images/search.png" alt="Search Patient" class="img-fluid">
-        <p class="link-text">Search Patient</p>
-    </a>
-
-    <a href="{% url 'show_dept' %}" class="link-image">
-        <img src="static/images/dep.jpg" alt="Departments" class="img-fluid">
-        <p class="link-text">Departments</p>
-    </a>
-
-    <a href="{% url 'dept' %}" class="link-image">
-        <img src="static/images/add.jpg" alt="Add Department" class="img-fluid">
-        <p class="link-text">Add Department</p>
-    </a>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'register_patient' %}">
+                <div class="card-box ">
+                    <i class="fas fa-user-plus"></i>
+                    <p >Register Patient</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'book_appointment' %}">
+                <div class="card-box">
+                    <i class="fas fa-calendar-check"></i>
+                    <p>Book Appointment</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'r_search_patient' %}">
+                <div class="card-box">
+                    <i class="fas fa-search"></i>
+                    <p>Search Patient</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'show_dept' %}">
+                <div class="card-box">
+                    <i class="fas fa-hospital"></i>
+                    <p>View Departments</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'dept' %}">
+                <div class="card-box">
+                    <i class="fas fa-plus-circle"></i>
+                    <p>Add Department</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'doctor_schedule' %}">
+                <div class="card-box">
+                    <i class="fas fa-user-md"></i>
+                    <p>Doctor Schedule</p>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

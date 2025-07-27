@@ -1,70 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    {% load static %}
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  {% load static %}
 
-        body {
-            /* background-image: url('{% static "images/r.jpg" %}');
-            background-size: cover;
-            background-position: center; */
-            background-color: #bad2ec;
-            height: 100vh;
-            margin: 0;
-        }
+  <style>
+    body {
+      background-color: #d2ecf6;
+      margin: 0;
+      padding-top: 56px; 
+    }
 
-        .navbar {
-            background: linear-gradient(to right, #343a40, #007bff); 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-        }
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1100;
+      background: linear-gradient(to right, #343a40, #007bff);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-        .navbar-brand {
-            color: white;
-            font-size: 24px; 
-            font-weight: bold; 
-        }
+    .navbar-brand {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
 
-        .navbar-nav .nav-item .nav-link {
-            color: white;
-            text-decoration: none;
-            transition: color 0.3s; 
-            font-size: 20px;
-        }
+    .navbar-nav .nav-item .nav-link {
+      color: white;
+      font-size: 20px;
+      transition: color 0.3s;
+    }
 
-        .navbar-nav .nav-item .nav-link:hover {
-            color: #ffcc00; 
-            text-decoration: none;
-        }
-    </style>
-    <title>Reception</title>
+    .navbar-nav .nav-item .nav-link:hover {
+      color: #ffcc00;
+    }
+
+ 
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #343a40;
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 100px;
+      z-index: 1200;
+    }
+
+    .sidebar a {
+      padding: 15px 26px;
+      text-decoration: none;
+      font-size: 18px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #007bff;
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: white;
+    }
+
+   
+    #overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1150;
+    }
+
+    #overlay.active {
+      display: block;
+    }
+  </style>
+
+  <title>Reception</title>
 </head>
 <body>
 
+
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="#">Reception</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'reception_home' %}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-            </li>
-        </ul>
-    </div>
+  <a class="navbar-brand" href="{% url 'reception_home' %}">Mediport</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'reception_home' %}"><i class="fas fa-home mr-2"></i>Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-outline-light ml-2" onclick="openSidebar()">☰ Menu</button>
+      </li>
+    </ul>
+  </div>
 </nav>
+
+
+<div id="sidebar" class="sidebar">
+  <a href="#" class="closebtn" onclick="closeSidebar()">&times;</a>
+  <a href="{% url 'reception_home' %}"><i class="fas fa-home mr-2"></i>Dashboard</a>
+  <a href="{% url 'register_patient' %}"><i class="fas fa-user-plus mr-2"></i>Register Patient</a>
+  <a href="{% url 'book_appointment' %}"><i class="fas fa-calendar-check mr-2"></i>Book Appointments</a>
+  <a href="{% url 'r_search_patient' %}"><i class="fas fa-search mr-2"></i>Search Patients</a>
+  <a href="{% url 'show_dept' %}"><i class="fas fa-building mr-2"></i>Departments</a>
+  <a href="{% url 'dept' %}"><i class="fas fa-plus-circle mr-2"></i>Add Departments</a>
+  <a href="{% url 'doctor_schedule' %}"><i class="fas fa-user-md mr-2"></i>Doctor's Schedule</a>
+  <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+</div>
+
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+
+{% block content %}
+{% endblock %}
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+  function openSidebar() {
+    document.getElementById("sidebar").style.width = "250px";
+    document.getElementById("overlay").classList.add("active");
+  }
+
+  function closeSidebar() {
+    document.getElementById("sidebar").style.width = "0";
+    document.getElementById("overlay").classList.remove("active");
+  }
+</script>
+
 </body>
 </html>
-{% block content %}
-{% endblock %}

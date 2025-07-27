@@ -2,36 +2,168 @@
 
 {% block content %}
 <style>
-    .msg{
-            text-align: center;
-            color: red;
-        }
-        .custom-card {
-        background-color: #d2e6fa; 
-        margin-bottom: 60px;
+    body {
+        background-color: #d2ecf6;
     }
-    </style>
-<div class="container mt-5">
-<div class="msg">
-    {% for meg in messages %}
-    <h5><div class="box">{{meg}}</div></h5>
-    {% endfor %}
+
+    .dashboard-container {
+        margin-top: 50px;
+        margin-bottom: 80px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 15px;
+        padding: 35px 30px;
+        box-shadow: 0 10px 25px rgba(0, 123, 255, 0.15);
+        height: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid #007bff;
+        margin-bottom: 15px;
+        box-shadow: 0 0 12px rgba(0, 123, 255, 0.4);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+    }
+
+    .profile-details p {
+        margin-bottom: 10px;
+        font-weight: 500;
+        color: #333;
+        font-size: 15px;
+    }
+
+    .profile-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-card {
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        text-align: center;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-6px);
+        background: #e8f4ff;
+    }
+
+    .dashboard-card i {
+        font-size: 2.1rem;
+        color: #007bff;
+        margin-bottom: 12px;
+    }
+
+    .card-title {
+        font-size: 1.05rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .msg {
+        text-align: center;
+        color: #dc3545;
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 767px) {
+        .profile-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+
+<div class="container dashboard-container">
+    <div class="msg">
+        {% for meg in messages %}
+            <div class="alert alert-warning">{{ meg }}</div>
+        {% endfor %}
     </div>
-<div class="container mt-5 d-flex justify-content-center">
-    <div class="card text-center custom-card" style="width: 500px;">
-        <div class="card-body">
-            <h5 class="card-title mt-3" style="font-size: 1.5rem;">Welcome, {{ doctor.get_full_name }}</h5>
-            <img src="{{ doctor_details.image.url }}" alt="Doctor Image" class="img-fluid rounded-circle" style="width: 150px; height: 150px;">
-            
-            <p class="card-text" style="font-size: 1.1rem;"><b>Name</b>: {{ doctor.get_full_name }}</p>
-            <p class="card-text" style="font-size: 1.1rem;"><b>Username</b>: {{ doctor.username }}</p>
-            <p class="card-text" style="font-size: 1.1rem;"><b>Email</b>: {{ doctor.email }}</p>
-            <p class="card-text" style="font-size: 1.1rem;"><b>Number</b>: {{ doctor_details.number }}</p>
-            <p class="card-text" style="font-size: 1.1rem;"><b>Department</b>: {{ doctor_details.department.department_name }}</p>
-            
+
+    <div class="row">
+        
+        <div class="col-md-4 mb-4">
+            <div class="profile-card">
+                <img src="{{ doctor_details.image.url }}" alt="Doctor Image" class="profile-img">
+                <div class="profile-title">Dr. {{ doctor.get_full_name }}</div>
+                <div class="profile-details">
+                    <p><i class="fas fa-user-tag"></i> <strong>Username:</strong> {{ doctor.username }}</p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> {{ doctor.email }}</p>
+                    <p><i class="fas fa-phone-alt"></i> <strong>Phone:</strong> {{ doctor_details.number }}</p>
+                    <p><i class="fas fa-hospital-symbol"></i> <strong>Department:</strong> {{ doctor_details.department.department_name }}</p>
+                </div>
+            </div>
+        </div>
+
+    
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'doctor_notifications' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-bell"></i>
+                        {% if new_appointments_count > 0 %}
+    <span class="badge badge-danger">
+      {{ new_appointments_count }}
+    </span>
+  {% endif %}
+                        <div class="card-title">Notifications</div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'appointment_list' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-calendar-check"></i>
+                        <div class="card-title">Appointment List</div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'search_patient' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-search"></i>
+                        <div class="card-title">Search Patient</div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'reassign_patient' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-exchange-alt"></i>
+                        <div class="card-title">Reassign Patient</div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'reassigned_details' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="card-title">Reassigned Patients</div>
+                    </a>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <a href="{% url 'change_password' %}" class="dashboard-card d-block text-decoration-none">
+                        <i class="fas fa-password"></i>
+                        <div class="card-title">Change Password</div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-</div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 {% endblock %}

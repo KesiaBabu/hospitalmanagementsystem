@@ -1,0 +1,31 @@
+{% extends 'doctor/doctorbase.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Notifications</h2>
+
+    <div class="row">
+        
+        <div class="col-md-6">
+            <h4>🗓 New Appointments ({{ new_appointments|length }})</h4>
+            {% if new_appointments %}
+                <ul class="list-group mb-4">
+                    {% for app in new_appointments %}
+                        <li class="list-group-item">
+                            <strong>Patient:</strong> {{ app.patient.patient_name }}<br>
+                            <strong>Date:</strong> {{ app.appointment_date|date:"d M Y, h:i A" }}<br>
+                            <a href="{% url 'consultation_form' app.id %}" class="btn btn-sm btn-primary mt-2">Consult Now</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No new appointments.</p>
+            {% endif %}
+        </div>
+
+      
+        
+    </div>
+</div>
+
+{% endblock %}

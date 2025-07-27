@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .header { text-align: center; }
+        .section { margin-bottom: 20px; }
+        .label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Consultation Summary</h2>
+    </div>
+
+    <div class="section">
+        <p><span class="label">Date:</span> {{ consultation.timestamp|date:"F d, Y H:i" }}</p>
+        <p><span class="label">Doctor:</span> {{ consultation.appointment.doctor.get_full_name }}</p>
+        <p><span class="label">Department:</span> {{ consultation.appointment.department.department_name }}</p>
+    </div>
+
+    <div class="section">
+        <p><span class="label">Patient:</span> {{ consultation.appointment.patient.patient_name }}</p>
+        <p><span class="label">Illness:</span> {{ consultation.illness }}</p>
+        <p><span class="label">Medicine:</span> {{ consultation.medicine_name }}</p>
+        <p><span class="label">Consumption Time:</span> {{ consultation.consumption_time }}</p>
+    </div>
+</body>
+</html>

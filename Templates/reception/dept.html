@@ -3,7 +3,7 @@
 {% block content %}
 <style>
     body {
-        background-color: #bad2ec;
+        background-color: #d2ecf6;
     }
 
     .content-wrapper {
@@ -40,8 +40,9 @@
 <body>
 
 <div class="content-wrapper">
+    <h2>Add Department</h2>
     <div class="container mt-4">
-        <h2>Add Department</h2>
+        
 
         <form method="post" action="{% url 'add_dept' %}">
             {% csrf_token %}

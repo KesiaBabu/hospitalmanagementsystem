@@ -1,107 +1,153 @@
-
 {% extends 'doctor/doctorbase.html' %}
 
 {% block content %}
 <style>
-  .msg {
-      
-      color: red;
-  }
-  </style>
-<div class="container mt-5 pb-5">
-  <h2 class="mb-4">Reassign Patient</h2>
-
-  <div class="msg">
-    {% for p in messages %}
-    <h5><div class="box">{{ p }}</div></h5>
-    {% endfor %}
-</div><br>
-
-    <h5><b>Current Doctor</b>: {{ current_doctor.get_full_name }}</h5>
-
-    <form method="post" action="{% url 'reassign_patient' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="department"><b>Department</b></label>
-        <select class="form-control" id="department" name='department' style="width: 60%;" required>
-            
-            {% for department in departments %}
-                <option value="{{ department.id }}" > {{ department.department_name }}
-                </option>
-            {% endfor %}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="new_doctor"><b>Select New Doctor:</b></label>
-        <select class="form-control" id="new_doctor" name="new_doctor" style="width: 60%;" required>
-          <option value="" disabled selected> Select Doctor</option>
-          {% for doctor in doctors %}
-            <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="patient"><b>Select Patient:</b></label>
-        <select class="form-control" id="patient" name="patient" style="width: 60%;" required>
-          {% for appointment in appointments %}
-            <option value="{{ appointment.patient.id }}">{{ appointment.patient.patient_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="illness"><b>Illness of the patient:</b></label>
-        <textarea class="form-control" id="illness" name="illness" rows="3" style="width: 60%;" required></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="medicine_name"><b>Prescribed medicine name:</b></label>
-        <input type="text" class="form-control narrower-input" id="medicine_name" name="medicine_name" style="width: 60%;" required>
-      </div>
-
-      <div class="form-group">
-        <label for="consumption_time"><b>Consumption Time:</b</label>
-        <select class="form-control" id="consumption_time" name="consumption_time" style="width: 80%;" required>
-            <option value="Morning">Morning</option>
-            <option value="Afternoon">Afternoon</option>
-            <option value="Evening">Evening</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="reason">Reason for Reassignment:</label>
-        <textarea class="form-control" id="reason" name="reason" rows="3" style="width: 60%;" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="appointment_date">Appointment Date and Time</label>
-        <input type="datetime-local" class="form-control" name="appointment_date" id="appointment_date" style="width: 60%;" required>
-    </div>
-
-      <button type="submit" class="btn btn-primary">Reassign</button>
-    </form>
-  </div>
-
-  <style>
-   
-    .form-control.narrower-input {
-      width: 80%;
+    body {
+        background-color: #d2ecf6;
     }
-  </style>
- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script>
-    $(document).ready(function() {
+
+    .reassign-container {
+        max-width: 800px;
+        margin: 30px auto 100px auto;
+        background: #fff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .container h2 {
+        text-align: center;
+        margin-top: 30px;
+        font-weight: bold;
         
+    }
+
+    label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 6px;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .msg .alert {
+        font-weight: 500;
+        border-radius: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container">
+  <h2><i class="fas fa-exchange-alt"></i> Reassign Patient</h2>
+    <div class="reassign-container">
+        
+
+        {% if messages %}
+        <div class="msg">
+            {% for p in messages %}
+            <div class="alert alert-danger">{{ p }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'reassign_patient' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="department"><i class="fas fa-hospital-symbol"></i> Department</label>
+                <select class="form-control" id="department" name="department" required>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}" {% if department.id|stringformat:"s" == selected_department %}selected{% endif %}>
+                            {{ department.department_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="new_doctor"><i class="fas fa-user-md"></i> New Doctor</label>
+                <select class="form-control" id="new_doctor" name="new_doctor" required>
+                    <option value="" disabled selected>Select Doctor</option>
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">{{ doctor.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="patient"><i class="fas fa-user"></i> Select Patient</label>
+                <select class="form-control" id="patient" name="patient" required>
+                  <option value="" selected disabled>Select Patient</option>
+                    {% for appointment in appointments %}
+                        <option value="{{ appointment.patient.id }}">{{ appointment.patient.patient_name }} ({{ appointment.patient.patient_id }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="illness"><i class="fas fa-notes-medical"></i> Illness Description</label>
+                <textarea class="form-control" id="illness" name="illness" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="medicine_name"><i class="fas fa-capsules"></i> Prescribed Medicine</label>
+                <input type="text" class="form-control" id="medicine_name" name="medicine_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="consumption_time"><i class="fas fa-clock"></i> Consumption Time</label>
+                <select class="form-control" id="consumption_time" name="consumption_time" required>
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="reason"><i class="fas fa-exclamation-circle"></i> Reason for Reassignment</label>
+                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Reassign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
         var selectedDepartment = "{{ selected_department }}";
         if (selectedDepartment) {
             $("#department").val(selectedDepartment);
         }
 
-      
-        $("#department").change(function() {
+        $("#department").change(function () {
             var selectedDepartment = $(this).val();
-            
-            
             window.location.href = "{% url 'reassign_patient' %}?department=" + selectedDepartment;
         });
     });

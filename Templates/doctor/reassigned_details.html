@@ -3,20 +3,21 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Reassigned Patient Details</h2><br>
-
+    <h2 style="text-align: center;"> <i class="fas fa-check-circle"></i> Reassigned Patient Details</h2><br>
+     {% if reassigned_patients %}
     <div class="table-responsive">
         <table class="table  table-hover">
-            <thead style="background-color: lightblue;">
+            <thead style="background-color: #c9daf8;">
                 <tr>
                     <th>Patient Name</th>
                     <th>Reassignment Date</th>
                     <th>Medicine Name</th>
                     <th>Illness</th>
                     <th>Consumption Time</th>
-                    <th>Assigned To</th>
+                    <!-- <th>Assigned To</th> -->
                     <th>Assigned By</th>
                     <th>Reason</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody style="background-color: white;">
@@ -27,14 +28,24 @@
                         <td>{{ reassigned_patient.medicine_name }}</td>
                         <td>{{ reassigned_patient.illness }}</td>
                         <td>{{ reassigned_patient.consumption_time }}</td>
-                        <td>{{ reassigned_patient.new_doctor.get_full_name }}</td>
+                        <!-- <td>{{ reassigned_patient.new_doctor.get_full_name }}</td> -->
                         <td>{{ reassigned_patient.current_doctor.get_full_name }}</td>
                         <td>{{ reassigned_patient.reason }}</td>
+                        <td>
+    {% if reassigned_patient.id in consulted_ids %}
+    <button class="btn btn-sm btn-success" disabled>Consulted</button>
+{% else %}
+    <a href="{% url 'consult_reassigned_patient' reassigned_patient.id %}" class="btn btn-sm btn-primary">Consult Now</a>
+{% endif %}
+</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    {% else %}
+        <p>No reassigned patients available.</p>
+    {% endif %}
 </div>
 
 <style>

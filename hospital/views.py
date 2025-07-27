@@ -17,8 +17,21 @@ from hospital.models import Appointment
 from hospital.models import Consultation
 from hospital.models import PatientReassignment
 from datetime import datetime
+from datetime import date
+from django.utils.timezone import now
+from django.http import JsonResponse
+from django.utils import timezone
 import random
 import string
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.db.models import Q
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from .models import Medicine
+from .models import Bill, BillItem
+from django.db import transaction
 
 # Create your views here.
 def home(request):
@@ -86,6 +99,7 @@ def show_dept(request):
     department = Department.objects.all()
     return render(request, 'reception/show_dept.html', {'department': department})
 
+@login_required  
 def delete_dept(request, id):
     dept = Department.objects.get(id=id)
     dept.delete()
@@ -112,9 +126,9 @@ def doc_reg(request):
         if CustomUser.objects.filter(username=username).exists():
             messages.success(request, 'Username already exists !!')
             return redirect('signup_doctor')
-        elif CustomUser.objects.filter(email=email).exists():
-            messages.success(request, 'Email already exists !!')
-            return redirect('signup_doctor')
+        # elif CustomUser.objects.filter(email=email).exists():
+        #     messages.success(request, 'Email already exists !!')
+        #     return redirect('signup_doctor')
         else:
             user = CustomUser.objects.create_user(username=username,password=password,first_name=first_name, last_name=last_name, email=email, user_type=user_type)
             user.set_password(password)
@@ -204,9 +218,9 @@ def register_patient(request):
             messages.error(request, 'Invalid email address!')
             return redirect('register_patient')
 
-        if patient.objects.filter(email=email).exists():
-            messages.success(request, 'Email already exists !!')
-            return redirect('register_patient')
+        # if patient.objects.filter(email=email).exists():
+        #     messages.success(request, 'Email already exists !!')
+        #     return redirect('register_patient')
         else:
             pat = patient.objects.create(patient_name=patient_name, patient_address=patient_address, mobile_number=mobile_number, email=email, patient_id=patient_id)
             pat.save()
@@ -217,82 +231,7 @@ def register_patient(request):
         
     return render(request,'reception/register_patient.html')
 
-from django.utils import timezone
 
-# def appointment_form(request, patient_id):
-#     patient_instance = get_object_or_404(patient, id=patient_id)
-#     departments = Department.objects.all()
-#     doctors = CustomUser.objects.filter(userdetails__user__user_type=2)
-
-#     if request.method == 'POST':
-#         department_id = request.POST.get('department')
-#         doctor_id = request.POST.get('doctor')
-#         appointment_date_str = request.POST.get('appointment_date')  
-
-#         selected_department = Department.objects.get(id=department_id)
-#         selected_doctor = get_object_or_404(CustomUser, id=doctor_id)
-#         token_number = str(random.randint(100000, 999999))
-
-#        
-#         appointment_date = datetime.strptime(appointment_date_str, '%Y-%m-%dT%H:%M')
-
-#         appointment = Appointment.objects.create(
-#             patient=patient_instance,
-#             department=selected_department,
-#             doctor=selected_doctor,
-#             token_number=token_number,
-#             appointment_date=appointment_date
-#         )
-#         subject = 'Appointment Confirmation'
-#         message = f'Thank you for scheduling an appointment. Your token number is {token_number}.'
-#         send_mail(subject, message, settings.EMAIL_HOST_USER, [patient_instance.email])
-
-#        
-#         return render(request, 'reception/appointment_confirm.html', {'patient_id': patient_id, 'appointment_id': appointment.id})
-
-#     return render(request, 'reception/appointment_form.html', {'patient': patient_instance, 'departments': departments, 'doctors': doctors})
-
-# def appointment_form(request, patient_id):
-#     patient_instance = get_object_or_404(patient, id=patient_id)
-#     departments = Department.objects.all()
-#     doctors = CustomUser.objects.filter(userdetails__user__user_type=2)
-
-#     if request.method == 'POST':
-#         department_id = request.POST.get('department')
-#         doctor_id = request.POST.get('doctor')
-#         appointment_date_str = request.POST.get('appointment_date')  
-
-        
-#         token_number = str(random.randint(100000, 999999))
-
-#         
-#         appointment_date = datetime.strptime(appointment_date_str, '%Y-%m-%dT%H:%M')
-
-#       
-#         appointment = Appointment.objects.create(
-#             patient=patient_instance,
-#             department=Department.objects.get(pk=department_id),
-#             doctor=CustomUser.objects.get(pk=doctor_id),
-#             # doctor=doctor_id,
-#             token_number=token_number,
-#             appointment_date=appointment_date
-#         )
-#         subject = 'Appointment Confirmation'
-#         message = f'Thank you for scheduling an appointment. Your token number is {token_number}.'
-#         send_mail(subject, message, settings.EMAIL_HOST_USER, [patient_instance.email])
-
-#         
-#         return render(request, 'reception/appointment_confirm.html', {'patient_id': patient_id, 'appointment': appointment})
-#     else:  # GET request
-#         
-#         selected_department = request.GET.get('department')
-#         doctors = CustomUser.objects.filter(user_type='2')
-
-#         
-#         if selected_department:
-#             doctors = CustomUser.objects.filter(Q(userdetails__department__id=selected_department))
-
-#     return render(request, 'reception/appointment_form.html', {'patient': patient_instance, 'departments': departments, 'doctors': doctors})
 
 @login_required
 def appointment_form(request, patient_id):
@@ -331,102 +270,14 @@ def appointment_form(request, patient_id):
         return render(request, 'reception/appointment_confirm.html', {'patient_id': patient_id, 'appointment': appointment, 'selected_department': selected_department})
 
     return render(request, 'reception/appointment_form.html', {'patient': patient_instance, 'departments': departments, 'doctors': doctors, 'selected_department': selected_department})
-# def reassign_patient(request):
-#     current_doctor = request.user
-#     appointments = Appointment.objects.filter(doctor=current_doctor)
-#     departments=Department.objects.all()
-    
 
-#     if request.method == 'POST':
-#         department_id = request.POST['department']
-#         patient_id = request.POST.get('patient')
-#         new_doctor_id = request.POST.get('new_doctor')
-#         reason = request.POST.get('reason')
-#         illness = request.POST.get('illness')
-#         medicine_name = request.POST.get('medicine_name')
-#         consumption_time = request.POST.get('consumption_time')
-
-#         patient_instance = patient.objects.get(id=patient_id)
-#         new_doctor = CustomUser.objects.get(id=new_doctor_id)
-
-#         
-#         PatientReassignment.objects.create(
-#             department=Department.objects.get(pk=department_id),
-#             patient=patient_instance,
-#             current_doctor=current_doctor,
-#             new_doctor=CustomUser.objects.get(pk=new_doctor),
-#             illness=illness,
-#             medicine_name=medicine_name,
-#             consumption_time=consumption_time,
-#             reassignment_date=timezone.now(),
-#             reason=reason
-#         )
-
-#         
-#         return redirect('reassign_patient')
-#     else:  # GET request
-#         departments = Department.objects.all()
-#         selected_department = request.GET.get('department')
-#         doctors = CustomUser.objects.filter(user_type='2')
-
-#         # Filter doctors based on the selected department if a department is selected
-#         if selected_department:
-#             doctors = CustomUser.objects.filter(Q(userdetails__department__id=selected_department))
-
-#     return render(request, 'doctor/reassign_patient.html', {'appointments': appointments,  'current_doctor': current_doctor,'departments': departments, 'doctors': doctors, 'selected_department': selected_department})
-####################################################correct one down#####################################3
-
-# def reassign_patient(request):
-#     current_doctor = request.user
-#     appointments = Appointment.objects.filter(doctor=current_doctor)
-#     all_doctors = CustomUser.objects.filter(userdetails__user__user_type=2)
-#     departments = Department.objects.all()  
-
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient')
-#         new_doctor_id = request.POST.get('new_doctor')
-#         reason = request.POST.get('reason')
-#         illness = request.POST.get('illness')
-#         medicine_name = request.POST.get('medicine_name')
-#         consumption_time = request.POST.get('consumption_time')
-#         department_id = request.POST.get('department')
-
-#         patient_instance = patient.objects.get(id=patient_id)
-#         new_doctor = CustomUser.objects.get(id=new_doctor_id)
-
-#         
-#         PatientReassignment.objects.create(
-#             department=Department.objects.get(pk=department_id),
-#             patient=patient_instance,
-#             current_doctor=current_doctor,
-#             new_doctor=new_doctor,
-#             illness=illness,
-#             medicine_name=medicine_name,
-#             consumption_time=consumption_time,
-#             reassignment_date=timezone.now(),
-#             reason=reason
-#         )
-
-#        
-#         return redirect('reassign_patient')
-
-#     else:  
-        
-#         selected_department = request.GET.get('department')
-#         doctors = CustomUser.objects.filter(user_type='2')
-
-#         # Filter doctors based on the selected department if a department is selected
-#         if selected_department:
-#             doctors = CustomUser.objects.filter(Q(userdetails__department__id=selected_department))
-
-#     return render(request, 'doctor/reassign_patient.html', {'appointments': appointments, 'all_doctors': all_doctors, 'current_doctor': current_doctor, 'departments': departments, 'doctors': doctors, 'selected_department': selected_department})
 
 @login_required
 def reassign_patient(request):
     current_doctor = request.user
     appointments = Appointment.objects.filter(doctor=current_doctor)
-    all_doctors = CustomUser.objects.filter(userdetails__user__user_type=2)
     departments = Department.objects.all()
+    all_doctors = CustomUser.objects.filter(user_type='2')  # Only doctors
 
     if request.method == 'POST':
         patient_id = request.POST.get('patient')
@@ -436,68 +287,95 @@ def reassign_patient(request):
         medicine_name = request.POST.get('medicine_name')
         consumption_time = request.POST.get('consumption_time')
         department_id = request.POST.get('department')
-        appointment_date_str = request.POST.get('appointment_date')
 
-        patient_instance = patient.objects.get(id=patient_id)
-        new_doctor = CustomUser.objects.get(id=new_doctor_id)
+        try:
+            selected_patient = patient.objects.get(id=patient_id)
+            new_doctor = CustomUser.objects.get(id=new_doctor_id)
+            department = Department.objects.get(pk=department_id)
+
+            reassignment = PatientReassignment.objects.create(
+                patient=selected_patient,
+                current_doctor=current_doctor,
+                new_doctor=new_doctor,
+                department=department,
+                illness=illness,
+                medicine_name=medicine_name,
+                consumption_time=consumption_time,
+                reassignment_date=timezone.now(),
+                reason=reason
+            )
+            messages.success(request, "Patient reassigned successfully!")
+            return redirect('reassign_patient')
+
+        except patient.DoesNotExist:
+            messages.error(request, "Selected patient does not exist.")
+        except CustomUser.DoesNotExist:
+            messages.error(request, "Selected doctor does not exist.")
+        except Department.DoesNotExist:
+            messages.error(request, "Selected department does not exist.")
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+
+   
+    selected_department = request.GET.get('department')
+    doctors = CustomUser.objects.filter(user_type='2')
+    if selected_department:
+        doctors = doctors.filter(userdetails__department__id=selected_department)
+
+   
+    unique_patient_ids = set()
+    unique_appointments = []
+    for app in appointments:
+        try:
+            if app.patient and app.patient.id not in unique_patient_ids:
+                unique_appointments.append(app)
+                unique_patient_ids.add(app.patient.id)
+        except Exception:
+            continue
+
+    return render(request, 'doctor/reassign_patient.html', {
+        'appointments': unique_appointments,
+        'all_doctors': all_doctors,
+        'departments': departments,
+        'doctors': doctors,
+        'selected_department': selected_department
+    })
+
+@login_required  
+def consult_reassigned_patient(request, reassignment_id):
+    reassignment = get_object_or_404(PatientReassignment, id=reassignment_id, new_doctor=request.user)
+
+    if request.method == 'POST':
+        illness = request.POST.get('illness')
+        medicine_name = request.POST.get('medicine_name')
+        consumption_time = request.POST.get('consumption_time')
 
         
-        reassignment_instance = PatientReassignment.objects.create(
-            department=Department.objects.get(pk=department_id),
-            patient=patient_instance,
-            current_doctor=current_doctor,
-            new_doctor=new_doctor,
-            illness=illness,
+        appointment = Appointment.objects.create(
+            patient=reassignment.patient,
+            department=reassignment.department,
+            doctor=request.user,
+            token_number=str(reassignment.id) + "RS",
+            appointment_date=timezone.now()
+        )
+
+        Consultation.objects.create(
+            appointment=appointment,
             medicine_name=medicine_name,
-            consumption_time=consumption_time,
-            reassignment_date=timezone.now(),
-            reason=reason
+            illness=illness,
+            consumption_time=consumption_time
         )
-        token_number = str(random.randint(100000, 999999))
-        appointment_date = datetime.strptime(appointment_date_str, '%Y-%m-%dT%H:%M')
+
        
-        Appointment.objects.create(
-            patient=patient_instance,
-            department=reassignment_instance.department,
-            doctor=new_doctor,
-            token_number=token_number,  
-            appointment_date=appointment_date  
-        )
-        subject = 'Appointment Confirmation'
-        message = f'Thank you for scheduling an appointment. Your token number is {token_number}.'
-        send_mail(subject, message, settings.EMAIL_HOST_USER, [patient_instance.email])
-        messages.success(request, 'Patient reassigned successfully!!')
-        return redirect('reassign_patient')
+        return redirect('reassigned_details')  
 
-    else:  # GET request
-        selected_department = request.GET.get('department')
-        doctors = CustomUser.objects.filter(user_type='2')
-
-        if selected_department:
-            doctors = CustomUser.objects.filter(Q(userdetails__department__id=selected_department))
-
-    return render(request, 'doctor/reassign_patient.html', {'appointments': appointments, 'all_doctors': all_doctors, 'current_doctor': current_doctor, 'departments': departments, 'doctors': doctors, 'selected_department': selected_department})   
-
-# def appointment_confirm(request, patient_id, appointment_id):
-#     
-#     patient_instance = patient.objects.get(id=patient_id)
-#     appointment_instance = Appointment.objects.get(id=appointment_id)
-
-#     
-#     context = {
-#         'patient': patient_instance,
-#         'appointment': appointment_instance,
-#     }
-
-#     
-#     return render(request, 'reception/appointment_confirm.html', context)
-    
+    return render(request, 'doctor/consult_reassigned_patient.html', {
+        'reassignment': reassignment
+    })
 
 
 @login_required
 def appointment_list(request):
-    # Sorting the appointments by appointment_date
-    # appointments = Appointment.objects.all().order_by('-appointment_date')
     doctor = request.user
     appointments = Appointment.objects.filter(doctor=doctor, doctor__user_type='2').order_by('-appointment_date')
 
@@ -512,7 +390,7 @@ def consultation_form(request, appointment_id):
     }
     return render(request, 'doctor/consultation_form.html', context)
 
-
+@login_required
 def submit_consultation(request,appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     if request.method == 'POST':
@@ -534,47 +412,33 @@ def submit_consultation(request,appointment_id):
 
     return render(request, 'doctor/consultation_form.html',{'appointment': appointment}) 
 
-# def search_patient(request):
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient_id')
-#         patient_instance = get_object_or_404(patient, patient_id=patient_id)
-        
-#         # Retrieve all appointments related to the patient
-#         appointments = Appointment.objects.filter(patient=patient_instance)
-        
-#         # Retrieve all consultations related to the patient's appointments
-#         consultations = Consultation.objects.filter(appointment__in=appointments)
-
-#         return render(request, 'doctor/search_result.html', {'patient': patient_instance, 'consultations': consultations})
-
-#     return render(request, 'doctor/search_patient.html')
-
 @login_required
 def search_patient(request):
     if request.method == 'POST':
-        
         doctor_user = request.user
         if doctor_user.user_type != '2':
-          
-            return redirect('search_patient')  
+            return redirect('search_patient')
 
-        
         patient_id = request.POST.get('patient_id')
 
         
-        patient_instance = get_object_or_404(patient, patient_id=patient_id)
-
-        
-        appointments = Appointment.objects.filter(doctor=doctor_user, patient=patient_instance)
-        if not appointments.exists():
-           
-            messages.warning(request, 'No appointments found for this patient with the current doctor.')
-            return redirect('search_patient')  
+        patient_instance = patient.objects.filter(patient_id=patient_id).first()
+        if not patient_instance:
+            messages.error(request, 'No patient found with the specified ID.')
+            return redirect('search_patient')
 
        
+        appointments = Appointment.objects.filter(doctor=doctor_user, patient=patient_instance)
+        if not appointments.exists():
+            messages.warning(request, 'No appointments found for this patient with the current doctor.')
+            return redirect('search_patient')
+
         consultations = Consultation.objects.filter(appointment__in=appointments)
 
-        return render(request, 'doctor/search_result.html', {'patient': patient_instance, 'consultations': consultations})
+        return render(request, 'doctor/search_result.html', {
+            'patient': patient_instance,
+            'consultations': consultations
+        })
 
     return render(request, 'doctor/search_patient.html')
 
@@ -629,20 +493,52 @@ def change_password(request):
     return render(request, 'doctor/change_password.html')
 
 @login_required
+def r_search_result(request, patient_id):
+    try:
+        patient_instance = patient.objects.get(patient_id=patient_id)
+    except patient.DoesNotExist:
+        return render(request, 'reception/r_search_result.html', {'patient': None})
+
+    now = timezone.now()
+
+    all_appointments = Appointment.objects.filter(patient=patient_instance)
+    consulted_ids = Consultation.objects.filter(appointment__in=all_appointments).values_list('appointment_id', flat=True)
+    appointments = all_appointments.exclude(id__in=consulted_ids)
+    upcoming_appointments = appointments.filter(appointment_date__gt=now)
+    consultations = Consultation.objects.filter(appointment__in=all_appointments)
+
+    return render(request, 'reception/r_search_result.html', {
+        'patient': patient_instance,
+        'consultations': consultations,
+        'now': now,
+        'appointments': appointments,  
+        'upcoming_appointments': upcoming_appointments,
+    })
+
+@login_required
+def cancel_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+
+    if request.method == "POST":
+        if appointment.appointment_date > timezone.now():
+            patient_id = appointment.patient.patient_id  # save before deleting
+            appointment.delete()
+            messages.success(request, "Appointment cancelled successfully.")
+        else:
+            messages.error(request, "Cannot cancel past appointments.")
+            patient_id = appointment.patient.patient_id
+
+    return redirect('r_search_result', patient_id=patient_id)
+
+@login_required
 def r_search_patient(request):
     if request.method == 'POST':
         patient_id = request.POST.get('patient_id')
-        patient_instance = get_object_or_404(patient, patient_id=patient_id)
-        
-        
-        appointments = Appointment.objects.filter(patient=patient_instance)
-        
-       
-        consultations = Consultation.objects.filter(appointment__in=appointments)
-
-        return render(request, 'reception/r_search_result.html', {'patient': patient_instance, 'consultations': consultations})
-
+        return redirect('r_search_result', patient_id=patient_id)
     return render(request, 'reception/r_search_patient.html')
+
+
+
 
 @login_required
 def pharmacy_home(request):
@@ -698,20 +594,6 @@ def p_change_password(request):
 
     return render(request, 'pharmacy/p_change_password.html')
 
-@login_required
-def p_search_patient(request):
-    if request.method == 'POST':
-        patient_id = request.POST.get('patient_id')
-        patient_instance = get_object_or_404(patient, patient_id=patient_id)
-        
-      
-        appointments = Appointment.objects.filter(patient=patient_instance)
-        
-        
-        consultations = Consultation.objects.filter(appointment__in=appointments)
-
-        return render(request, 'pharmacy/p_search_result.html', {'patient': patient_instance, 'consultations': consultations})
-    return render(request, 'pharmacy/p_search_patient.html')
 
 @login_required
 def pres_details(request):
@@ -724,44 +606,7 @@ def pres_details(request):
 
     return render(request, 'pharmacy/pres_details.html', context)
 
-# def book_appointment(request):
-#     departments = Department.objects.all()
-#     doctors = CustomUser.objects.filter(user_type='2')
 
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient_id')
-#         department_id = request.POST.get('department')
-#         doctor_id = request.POST.get('doctor')
-#         appointment_date = request.POST.get('appointment_date')
-
-#         patient_instance = patient.objects.filter(patient_id=patient_id).first()
-
-#         if patient_instance and department_id and doctor_id and appointment_date:
-#             department_instance = Department.objects.get(pk=department_id)
-#             doctor_instance = CustomUser.objects.get(pk=doctor_id)
-
-#             # Generate a token based on your logic
-#             token_number = str(random.randint(100000, 999999))
-
-#             appointment = Appointment.objects.create(
-#                 patient=patient_instance,
-#                 department=department_instance,
-#                 doctor=doctor_instance,
-#                 token_number=token_number,
-#                 appointment_date=appointment_date
-#             )
-#             appointment.save()
-
-#             # Send an email to the patient
-#             subject = 'Appointment Confirmation'
-#             message = f'Your appointment is confirmed. Token Number: {token_number}'
-#             from_email = settings.DEFAULT_FROM_EMAIL
-#             to_email = [patient_instance.email]
-#             send_mail(subject, message, from_email, to_email, fail_silently=True)
-
-#             return redirect('appointment_details') 
-
-#     return render(request, 'reception/book_appointment.html', {'departments': departments, 'doctors': doctors})
 from django.urls import reverse
 
 
@@ -777,65 +622,6 @@ def appointment_details(request, patient_id):
 
     return render(request, 'reception/appointment_details.html', context)
 
-# def reassign_patient(request):
-#     current_doctor = request.user
-#     appointments = Appointment.objects.filter(doctor=current_doctor)
-#     all_doctors = CustomUser.objects.filter(user_type=2)
-
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient')
-#         new_doctor_id = request.POST.get('new_doctor')
-#         reason = request.POST.get('reason')
-
-#         patient_instance = patient.objects.get(id=patient_id)
-#         new_doctor = CustomUser.objects.get(id=new_doctor_id)
-
-#         PatientReassignment.objects.create(
-#             patient=patient_instance,
-#             current_doctor=current_doctor,
-#             new_doctor=new_doctor,
-#             reassignment_date=timezone.now(), 
-#             reason=reason
-#         )
-
-#         
-#         return redirect('reassign_patient')
-
-#     return render(request, 'doctor/reassign_patient.html', {'appointments': appointments, 'all_doctors': all_doctors, 'current_doctor': current_doctor})
-
-# def reassign_patient(request):
-#     current_doctor = request.user
-#     appointments = Appointment.objects.filter(doctor=current_doctor)
-#     all_doctors = CustomUser.objects.filter(user_type=2)
-
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient')
-#         new_doctor_id = request.POST.get('new_doctor')
-#         reason = request.POST.get('reason')
-#         illness = request.POST.get('illness')
-#         medicine_name = request.POST.get('medicine_name')
-#         consumption_time = request.POST.get('consumption_time')
-
-#         patient_instance = patient.objects.get(id=patient_id)
-#         new_doctor = CustomUser.objects.get(id=new_doctor_id)
-
-#        
-#         PatientReassignment.objects.create(
-#             patient=patient_instance,
-#             current_doctor=current_doctor,
-#             new_doctor=new_doctor,
-#             illness=illness,
-#             medicine_name=medicine_name,
-#             consumption_time=consumption_time,
-#             reassignment_date=timezone.now(),
-#             reason=reason
-#         )
-
-#         
-#         return redirect('reassign_patient')
-
-#     return render(request, 'doctor/reassign_patient.html', {'appointments': appointments, 'all_doctors': all_doctors, 'current_doctor': current_doctor})
-
 
 def reassign_patient_success(request):
     return render(request,'doctor/reassign_patient_success.html')
@@ -844,8 +630,17 @@ def reassign_patient_success(request):
 def reassigned_details(request):
     current_doctor = request.user
     reassigned_patients = PatientReassignment.objects.filter(new_doctor=current_doctor)
-    
-    return render(request, 'doctor/reassigned_details.html', {'reassigned_patients': reassigned_patients})
+
+    consulted_ids = set()
+    for reassignment in reassigned_patients:
+        token = str(reassignment.id) + "RS"
+        if Appointment.objects.filter(token_number=token, consultation__isnull=False).exists():
+            consulted_ids.add(reassignment.id)
+
+    return render(request, 'doctor/reassigned_details.html', {
+        'reassigned_patients': reassigned_patients,
+        'consulted_ids': consulted_ids
+    })
 
 @login_required
 def recent_prescriptions(request):
@@ -853,87 +648,7 @@ def recent_prescriptions(request):
 
     return render(request, 'pharmacy/recent_prescriptions.html', {'recent_prescriptions': recent_prescriptions})
 
-# def book_appointment(request):
-#     departments = Department.objects.all()
-#     doctors = CustomUser.objects.filter(user_type='2')
 
-#     if request.method == 'POST':
-#         patient_id = request.POST.get('patient_id')
-#         department_id = request.POST.get('department')
-#         doctor_id = request.POST.get('doctor')
-#         appointment_date = request.POST.get('appointment_date')
-
-#         patient_instance = patient.objects.filter(patient_id=patient_id).first()
-
-#         if patient_instance and department_id and doctor_id and appointment_date:
-#             department_instance = Department.objects.get(pk=department_id)
-#             doctor_instance = CustomUser.objects.get(pk=doctor_id)
-
-#             
-#             token_number = str(random.randint(100000, 999999))
-
-#             appointment = Appointment.objects.create(
-#                 patient=patient_instance,
-#                 department=department_instance,
-#                 doctor=doctor_instance,
-#                 token_number=token_number,
-#                 appointment_date=appointment_date
-#             )
-#             appointment.save()
-
-#             # Send an email to the patient
-#             subject = 'Appointment Confirmation'
-#             message = f'Your appointment is confirmed. Token Number: {token_number}'
-#             from_email = settings.DEFAULT_FROM_EMAIL
-#             to_email = [patient_instance.email]
-#             send_mail(subject, message, from_email, to_email, fail_silently=True)
-
-#             return render(request, 'reception/appointment_details.html', {'patient_id': patient_id, 'appointment_id': appointment.id})
-
-#     return render(request, 'reception/book_appointment.html', {'departments': departments, 'doctors': doctors})
-
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.db.models import Q
-
-# def book_appointment(request):
-#     if request.method == 'POST':
-#         patient_id = request.POST['patient_id']
-#         department_id = request.POST['department']
-#         doctor_id = request.POST['doctor']
-#         appointment_time = request.POST['appointment_time']
-
-#         
-#         token_number = "ABC123"
-
-#      
-#         appointment = Appointment.objects.create(
-#             patient=patient.objects.get(patient_id=patient_id),
-#             department=Department.objects.get(pk=department_id),
-#             doctor=CustomUser.objects.get(pk=doctor_id),
-#             token_number=token_number,
-#             appointment_time=appointment_time
-#         )
-#         appointment.save
-
-#         
-#         patient_email = patient.objects.get(patient_id=patient_id).email
-#         subject = 'Appointment Confirmation'
-#         message = f'Your appointment is confirmed. Token Number: {token_number}'
-#         from_email = settings.DEFAULT_FROM_EMAIL
-#         send_mail(subject, message, from_email, [patient_email])
-
-#         return HttpResponse('Appointment booked successfully. Email sent to patient.')
-#     else:
-#         departments = Department.objects.all()
-#         doctors = CustomUser.objects.filter(user_type='2')
-
-#         # Filter doctors based on the selected department if a department is selected
-#         selected_department = request.GET.get('department')
-#         if selected_department:
-#             doctors = doctors.filter(Q(userdetails__department__id=selected_department))
-
-#         return render(request, 'reception/book_appointment.html', {'departments': departments, 'doctors': doctors})
 
 @login_required
 def book_appointment(request):
@@ -942,7 +657,29 @@ def book_appointment(request):
         patient_id = request.POST['patient_id']
         department_id = request.POST['department']
         doctor_id = request.POST['doctor']
-        appointment_date = request.POST['appointment_date']
+        # appointment_date = request.POST['appointment_date']
+        appointment_date_str = request.POST['appointment_date']
+        appointment_date = datetime.strptime(appointment_date_str, "%Y-%m-%dT%H:%M")
+        appointment_date_only = appointment_date.date()
+
+        try:
+            patient_obj = patient.objects.get(patient_id=patient_id)
+        except patient.DoesNotExist:
+            messages.error(request, "Patient ID does not exist. Please enter a valid Patient ID.")
+            return redirect('book_appointment')
+
+        doctor = CustomUser.objects.get(pk=doctor_id)
+        start = datetime.combine(appointment_date_only, datetime.min.time())
+        end = datetime.combine(appointment_date_only, datetime.max.time())
+
+        appointment_count = Appointment.objects.filter(
+        doctor=doctor,
+        appointment_date__range=(start, end)
+        ).count()
+
+        if appointment_count >= 5:
+            messages.error(request, "This doctor already has 5 appointments on the selected date. Please choose another date or doctor.")
+            return redirect('book_appointment') 
 
        
         token_number = str(random.randint(100000, 999999))
@@ -963,15 +700,310 @@ def book_appointment(request):
         from_email = settings.DEFAULT_FROM_EMAIL
         send_mail(subject, message, from_email, [patient_email])
 
-        return render(request, 'reception/appointment_details.html', {'patient_id': patient_id, 'appointment': appointment})
+        return render(request, 'reception/appointment_details.html', {
+            'patient_id': patient_id,
+            'appointment': appointment
+        })
 
-    else: 
+    else:
         departments = Department.objects.all()
         selected_department = request.GET.get('department')
-        doctors = CustomUser.objects.filter(user_type='2')
-
         
+        
+        selected_department_int = None
         if selected_department:
-            doctors = CustomUser.objects.filter(Q(userdetails__department__id=selected_department))
+            try:
+                selected_department_int = int(selected_department)
+            except ValueError:
+                selected_department_int = None
 
-        return render(request, 'reception/book_appointment.html', {'departments': departments, 'doctors': doctors, 'selected_department': selected_department})
+        doctors = CustomUser.objects.filter(user_type='2')
+        if selected_department_int:
+            doctors = doctors.filter(userdetails__department__id=selected_department_int)
+
+        return render(request, 'reception/book_appointment.html', {
+            'departments': departments,
+            'doctors': doctors,
+            'selected_department': selected_department_int
+        })
+    
+
+    ##### Adding new Features #####
+
+def forgot_password(request):
+    if request.method == 'POST':
+        username_or_email = request.POST.get('username_or_email')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect('forgot_password')
+
+        try:
+            user = CustomUser.objects.get(username=username_or_email)
+        except CustomUser.DoesNotExist:
+            try:
+                user = CustomUser.objects.get(email=username_or_email)
+            except CustomUser.DoesNotExist:
+                messages.error(request, "No user found with that username or email.")
+                return redirect('forgot_password')
+
+        user.set_password(new_password)
+        user.save()
+        messages.success(request, "Password reset successfully. Please login.")
+        return redirect('loginpage')
+
+    return render(request, 'forgot_password.html')
+
+@login_required
+def download_consultation_summary(request, consultation_id):
+    consultation = Consultation.objects.get(id=consultation_id)
+    template = get_template('reception/consultation_pdf.html')
+    html = template.render({'consultation': consultation})
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="consultation_{consultation.id}.pdf"'
+    
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('PDF generation failed')
+    return response
+
+@login_required
+def doctor_schedule_view(request):
+    selected_date = request.GET.get('date', date.today().isoformat())  
+    
+ 
+    doctors = CustomUser.objects.filter(user_type='2')  
+
+    schedule = []
+    for doctor in doctors:
+        appointments = Appointment.objects.filter(
+            doctor=doctor,
+            appointment_date__date=selected_date
+        ).order_by('appointment_date')
+
+        schedule.append({
+            'doctor': doctor,
+            'department': doctor.userdetails.department.department_name if hasattr(doctor, 'userdetails') else 'N/A',
+            'appointments': appointments
+        })
+
+    return render(request, 'reception/doctor_schedule.html', {
+        'schedule': schedule,
+        'selected_date': selected_date
+    })
+
+@login_required
+def doctor_schedule(request):
+    departments = Department.objects.all()
+    selected_department = request.POST.get("department")
+    selected_doctor = request.POST.get("doctor")
+    selected_date_str = request.POST.get("appointment_date")
+
+    doctors = CustomUser.objects.filter(user_type='2', userdetails__department__id=selected_department) if selected_department else []
+    appointments = []
+    selected_doctor_obj = None
+    selected_date = None
+    available_slots = None 
+
+    if selected_doctor and selected_date_str:
+        selected_date = datetime.strptime(selected_date_str, "%Y-%m-%d").date()
+        selected_doctor_obj = CustomUser.objects.get(id=selected_doctor)
+
+        start_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.min.time()))
+        end_datetime = timezone.make_aware(datetime.combine(selected_date, datetime.max.time()))
+
+        appointments = Appointment.objects.filter(
+            doctor=selected_doctor_obj,
+            appointment_date__range=(start_datetime, end_datetime)
+        )
+        max_slots = 5
+        available_slots = max_slots - appointments.count()
+
+    context = {
+        "departments": departments,
+        "doctors": doctors,
+        "appointments": appointments,
+        "selected_department": selected_department,
+        "selected_doctor": selected_doctor_obj,
+        "selected_date": selected_date_str,
+        "available_slots": available_slots  
+    }
+    return render(request, "reception/doctor_schedule.html", context)
+
+def get_doctors_by_department(request):
+    dept_id = request.GET.get("dept_id")
+    doctors = []
+    if dept_id:
+        doctors_qs = CustomUser.objects.filter(
+            userdetails__department__id=dept_id,
+            user_type='2'  # assuming '2' means doctor
+        ).distinct()
+        doctors = [{"id": doc.id, "name": doc.get_full_name()} for doc in doctors_qs]
+    return JsonResponse({"doctors": doctors})
+
+@login_required
+def stock_list(request):
+    medicines = Medicine.objects.all()
+    return render(request, 'pharmacy/stock_list.html', {'medicines': medicines})
+
+@login_required
+def add_medicine(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        quantity = request.POST.get('quantity')
+        price = request.POST.get('price')
+        expiry_date = request.POST.get('expiry_date')
+
+        if not Medicine.objects.filter(name=name).exists():
+            Medicine.objects.create(
+                name=name,
+                description=description,
+                quantity=quantity,
+                price=price,
+                expiry_date=expiry_date
+            )
+            messages.success(request, 'Medicine added successfully.')
+            return redirect('stock_list')
+        else:
+            messages.error(request, 'Medicine with this name already exists.')
+    
+    return render(request, 'pharmacy/add_medicine.html')
+
+@login_required
+def create_bill(request):
+    if request.method == "POST":
+        patient_id = request.POST.get('patient')
+        medicine_ids = request.POST.getlist('medicine[]')
+        quantities = request.POST.getlist('quantity[]')
+
+        patient_obj = patient.objects.get(id=patient_id)
+        total_amount = 0
+        bill = Bill.objects.create(patient=patient_obj, total_amount=0) 
+
+        for med_id, qty in zip(medicine_ids, quantities):
+            medicine = Medicine.objects.get(id=med_id)
+            qty = int(qty)
+
+            if medicine.quantity < qty:
+                messages.error(request, f"Not enough stock for {medicine.name}")
+                bill.delete()
+                return redirect('create_bill')
+
+            subtotal = medicine.price * qty
+            total_amount += subtotal
+
+            BillItem.objects.create(
+                bill=bill,
+                medicine=medicine,
+                quantity=qty,
+                price=medicine.price
+            )
+
+            medicine.quantity -= qty
+            medicine.save()
+
+        bill.total_amount = total_amount
+        bill.save()
+        return redirect('bill_detail', bill.id)
+
+    patients = patient.objects.all()
+    medicines = Medicine.objects.all()
+    return render(request, 'pharmacy/create_bill.html', {
+        'patients': patients,
+        'medicines': medicines
+    })
+
+@login_required
+def bill_detail(request, bill_id):
+    bill = get_object_or_404(Bill, id=bill_id)
+    items = BillItem.objects.filter(bill=bill)
+
+    
+    for item in items:
+        item.subtotal = item.price * item.quantity
+
+    return render(request, 'pharmacy/bill_detail.html', {
+        'bill': bill,
+        'items': items,
+    })
+
+def download_bill_pdf(request, bill_id):
+    bill = Bill.objects.get(id=bill_id)
+    items = BillItem.objects.filter(bill=bill)
+    for item in items:
+        item.subtotal = item.price * item.quantity
+
+
+    template_path = 'pharmacy/bill_pdf.html'
+    context = {
+        'bill': bill,
+        'items': items,
+    }
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Bill_{bill.id}.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('PDF generation failed')
+    return response
+
+@login_required
+def edit_medicine(request, id):
+    medicine = get_object_or_404(Medicine, id=id)
+    if request.method == 'POST':
+        medicine.name = request.POST.get('name')
+        medicine.description = request.POST.get('description')
+        medicine.quantity = request.POST.get('quantity')
+        medicine.price = request.POST.get('price')
+        medicine.expiry_date = request.POST.get('expiry_date')
+        medicine.save()
+        messages.success(request, "Medicine updated successfully!")
+        return redirect('stock_list')
+    return render(request, 'pharmacy/edit_medicine.html', {'medicine': medicine})
+
+def delete_medicine(request, id):
+    medicine = get_object_or_404(Medicine, id=id)
+    medicine.delete()
+    messages.warning(request, "Medicine deleted.")
+    return redirect('stock_list')
+
+@login_required
+def search_patient_billing(request):
+    if request.method == "POST":
+        patient_id = request.POST.get("patient_id")
+        try:
+            pat = patient.objects.get(patient_id=patient_id)
+            bills = Bill.objects.filter(patient=pat).prefetch_related('items__medicine')
+            for bill in bills:
+                for item in bill.items.all():
+                    item.subtotal = item.quantity * item.price
+            
+            return render(request, "pharmacy/pha_search.html", {"patient": pat, "bills": bills})
+        except patient.DoesNotExist:
+            messages.error(request, "Patient ID not found.")
+
+    return render(request, "pharmacy/p_search_patient.html")
+
+@login_required
+def doctor_notifications(request):
+    doctor = request.user
+    consulted_appointment_ids = Consultation.objects.values_list('appointment_id', flat=True)
+
+    new_appointments = Appointment.objects.filter(
+        doctor=doctor,
+        appointment_date__gte=now()
+    ).exclude(id__in=consulted_appointment_ids)
+
+    
+    return render(request, 'doctor/notifications.html', {
+        'new_appointments': new_appointments,
+        'new_appointments_count': new_appointments.count(),
+    })
